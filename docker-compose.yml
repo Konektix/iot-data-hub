@@ -1,0 +1,59 @@
+services:
+  timescaledb:
+    extends:
+      file: docker-compose.base.yml
+      service: timescaledb
+      container_name: timescaledb_container
+    # container_name: timescaledb_container
+    # image: timescale/timescaledb:latest-pg17
+    # restart: unless-stopped
+    # ports:
+    #   - 5432:5432
+    # environment:
+    #   TIMESCALEDB_TELEMETRY: off
+    #   POSTGRES_DB: timescaledb
+    #   POSTGRES_USER: admin
+    #   POSTGRES_PASSWORD: root
+    #   POSTGRES_HOST_AUTH_METHOD: trust # disable authentication - not for prod
+    #   PGDATA: /data/postgres
+    networks:
+      - postgres
+    volumes:
+      - postgres:/data/postgres
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      # PGADMIN_CONFIG_SERVER_MODE: 'False' # disable signing in - not for prod
+    ports:
+      - "5050:80"
+    depends_on:
+      - timescaledb
+    networks:
+      - postgres
+    volumes: 
+      - pgadmin:/var/lib/pgadmin
+
+  # app:
+  #   restart: unless-stopped
+  #   build: .
+  #   ports:
+  #     - 4000:3000
+  #   environment:
+  #     DATABASE_URL: postgresql://admin:root@timescaledb:5432/timescaledb
+  #   depends_on:
+  #     - timescaledb
+  #   networks:
+  #     - postgres
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
