@@ -17,8 +17,9 @@ export interface Device extends DeviceBase {
 
 export interface Hub {
     id: UUID;
-    addedAt: string;
-    updatedAt: string;
+    addedAt: Date;
+    updatedAt: Date;
+    devices: Device[];
 }
 
 export interface DeviceMessage {

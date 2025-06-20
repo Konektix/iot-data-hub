@@ -25,10 +25,15 @@ export class HubRepository extends BaseRepository<'hub'> {
     async get(id: UUID) {
         return this.getModelClient().findUnique({
             where: { id },
-            select: {
-                id: true,
-                addedAt: true,
-                updatedAt: true,
+            include: {
+                devices: true,
+            },
+        });
+    }
+
+    async getAll() {
+        return this.getModelClient().findMany({
+            include: {
                 devices: true,
             },
         });

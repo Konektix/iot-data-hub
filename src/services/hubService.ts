@@ -115,9 +115,13 @@ export class HubService {
         });
     }
 
-    // async getHub(id: UUID) {
-    //     return await this.hubRepository.get(id);
-    // }
+    async getHub(id: UUID) {
+        return await this.hubRepository.get(id);
+    }
+
+    async getAll() {
+        return await this.hubRepository.getAll();
+    }
 
     // async deleteHubAndRelatedDevices(id: UUID) {
     //     const deleteDevices = this.deviceRepository.getModelClient().deleteMany({
