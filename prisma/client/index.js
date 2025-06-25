@@ -160,6 +160,10 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "linux-musl-arm64-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -167,7 +171,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "..",
@@ -186,8 +190,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"linux-musl-arm64-openssl-3.0.x\"]\n  output        = \"./client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Log {\n  id        Int      @default(autoincrement())\n  logged_at DateTime @default(now())\n  value     Float\n\n  @@unique([id, logged_at])\n}\n\nmodel Hub {\n  id        String   @unique\n  addedAt   DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  devices   Device[]\n}\n\nmodel Device {\n  id          String   @id @default(uuid())\n  ieeeAddress String\n  vendor      String\n  model       String\n  powerSource String\n  description String\n  addedAt     DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  removed     Boolean  @default(false)\n  hub         Hub      @relation(fields: [hubId], references: [id])\n  hubId       String\n}\n",
-  "inlineSchemaHash": "457b9769e7fee5418e408208ec8621b54c00439212ca658535e7233824b63d97",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"linux-musl-arm64-openssl-3.0.x\", \"linux-musl-openssl-3.0.x\"]\n  output        = \"./client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Log {\n  id        Int      @default(autoincrement())\n  logged_at DateTime @default(now())\n  value     Float\n\n  @@unique([id, logged_at])\n}\n\nmodel Hub {\n  id        String   @unique\n  addedAt   DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  devices   Device[]\n}\n\nmodel Device {\n  id          String   @id @default(uuid())\n  ieeeAddress String\n  vendor      String\n  model       String\n  powerSource String\n  description String\n  addedAt     DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n  removed     Boolean  @default(false)\n  hub         Hub      @relation(fields: [hubId], references: [id])\n  hubId       String\n}\n",
+  "inlineSchemaHash": "7dea08f7c0a08203a6322d1f86e203f64cb770ea6a684b242c58dc781372c137",
   "copyEngine": true
 }
 
@@ -232,6 +236,10 @@ path.join(process.cwd(), "prisma/client/libquery_engine-darwin-arm64.dylib.node"
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node");
 path.join(process.cwd(), "prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-musl-openssl-3.0.x.so.node");
+path.join(process.cwd(), "prisma/client/libquery_engine-linux-musl-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "prisma/client/schema.prisma")
