@@ -1,5 +1,5 @@
-import { PrismaClient, Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
+import { PrismaClient, Prisma } from '../../prisma/client';
+import { DefaultArgs } from '../../prisma/client/runtime/library';
 import { DeviceService } from '../../src/services/deviceService';
 import { DeviceRepository } from '../../src/repositories/deviceRepository';
 

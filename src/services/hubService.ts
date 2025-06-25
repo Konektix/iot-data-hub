@@ -88,31 +88,32 @@ export class HubService {
             return await this.hubRepository.create(hubId, devices);
         }
 
-        const { toRemove, toAdd } = this.getRemovedAndAddedDevices(hub.devices, devices);
+        const { toAdd, toRemove } = this.getRemovedAndAddedDevices(hub.devices, devices);
 
-        return await this.hubRepository.getModelClient().update({
-            where: { id: hubId },
-            data: {
-                devices: {
-                    createMany: {
-                        data: toAdd,
-                    },
-                    updateMany: {
-                        where: {
-                            id: {
-                                in: toRemove.map((device) => device.id),
-                            },
-                        },
-                        data: {
-                            removed: true,
-                        },
-                    },
-                },
-            },
-            include: {
-                devices: true,
-            },
-        });
+        return await this.hubRepository.updateHubDevices(hubId, toAdd, toRemove);
+        // return await this.hubRepository.getModelClient().update({
+        //     where: { id: hubId },
+        //     data: {
+        //         devices: {
+        //             createMany: {
+        //                 data: toAdd,
+        //             },
+        //             updateMany: {
+        //                 where: {
+        //                     id: {
+        //                         in: toRemove.map((device) => device.id),
+        //                     },
+        //                 },
+        //                 data: {
+        //                     removed: true,
+        //                 },
+        //             },
+        //         },
+        //     },
+        //     include: {
+        //         devices: true,
+        //     },
+        // });
     }
 
     async getHub(id: UUID) {

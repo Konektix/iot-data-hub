@@ -17,7 +17,7 @@ export class DeviceService {
     // }
 
     async getAllDevicesByHubId(hubId: UUID) {
-        return await this.deviceRepository.getModelClient().findMany({ where: { hubId } });
+        return await this.deviceRepository.getAllDevicesByHubId(hubId);
     }
 
     // async deleteDevices(ids: UUID[]) {

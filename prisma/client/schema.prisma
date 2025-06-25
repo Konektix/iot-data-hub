@@ -1,0 +1,39 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+  output        = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Log {
+  id        Int      @default(autoincrement())
+  logged_at DateTime @default(now())
+  value     Float
+
+  @@unique([id, logged_at])
+}
+
+model Hub {
+  id        String   @unique
+  addedAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  devices   Device[]
+}
+
+model Device {
+  id          String   @id @default(uuid())
+  ieeeAddress String
+  vendor      String
+  model       String
+  powerSource String
+  description String
+  addedAt     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  removed     Boolean  @default(false)
+  hub         Hub      @relation(fields: [hubId], references: [id])
+  hubId       String
+}

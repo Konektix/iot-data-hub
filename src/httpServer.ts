@@ -1,47 +1,38 @@
-import { PrismaClient } from '@prisma/client';
 import Express, { Application, Router } from 'express';
-import { HubRepository } from './repositories/hubRepository';
-import { DeviceRepository } from './repositories/deviceRepository';
-import { HubService } from './services/hubService';
-import { HubController } from './controllers/hubController';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
+import { BaseController } from './controllers/baseController';
 
-(async () => {
-    const app: Application = Express();
+export class HttpServer {
+    private readonly app: Application;
 
-    const prismaClient = new PrismaClient();
-    const hubRepository = new HubRepository(prismaClient);
-    const deviceRepository = new DeviceRepository(prismaClient);
-    const hubService = new HubService(hubRepository, deviceRepository);
-    const hubController = new HubController(hubService);
+    constructor(controllers: BaseController[], onTerminate: () => void) {
+        this.app = Express();
+        const router = Router();
 
-    await prismaClient.$connect();
+        controllers.forEach((controller) => controller.init(router));
 
-    const router = Router();
+        this.app.use('/api', router);
 
-    hubController.init(router);
+        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(bodyParser.json());
+        this.app.use(compression());
+        // this.app.use(cors({ origin: 'http://abc.com' }));
+        this.app.use(cors());
 
-    app.use('/api', router);
-
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
-    app.use(compression());
-    // app.use(cors({ origin: 'http://abc.com' }));
-    app.use(cors());
-
-    const server = app.listen(3000, () => {
-        console.log('HTTP server started.');
-    });
-
-    process.on('SIGTERM', async () => {
-        console.log('SIGTERM signal received: closing HTTP server');
-
-        await prismaClient.$disconnect();
-
-        server.close(() => {
-            console.log('HTTP server closed');
+        const server = this.app.listen(3000, () => {
+            console.log('HTTP server started.');
         });
-    });
-})();
+
+        process.on('SIGTERM', async () => {
+            console.log('SIGTERM signal received: closing HTTP server');
+
+            onTerminate();
+
+            server.close(() => {
+                console.log('HTTP server closed');
+            });
+        });
+    }
+}

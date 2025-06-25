@@ -1,5 +1,5 @@
 services:
-  timescaledb:
+  iot-data-hub-db:
     container_name: base_timescaledb_container
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
@@ -7,7 +7,7 @@ services:
       - 5432:5432
     environment:
       TIMESCALEDB_TELEMETRY: off
-      POSTGRES_DB: timescaledb
+      POSTGRES_DB: iotDataHubDb
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: root
       POSTGRES_HOST_AUTH_METHOD: trust # disable authentication - not for prod

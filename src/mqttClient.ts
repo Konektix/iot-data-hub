@@ -7,11 +7,21 @@ export class MqttClient {
 
     constructor(brokerUrl: string, hubService: HubService) {
         this.mqttClient = connect(brokerUrl);
+        // this.mqttClient = connect(brokerUrl, { createWebsocket});
 
-        this.mqttClient.subscribe('#', (error) => {
-            if (error) {
-                console.error(error);
-            }
+        this.mqttClient.on('connect', (packet) => {
+            console.log('Client connected to mqtt broker.');
+
+            this.mqttClient.subscribe('#', (error) => {
+                if (error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        this.mqttClient.on('error', (error) => {
+            console.log('MQTT client error');
+            console.log(error);
         });
 
         this.mqttClient.on('message', async (topic, message) => {

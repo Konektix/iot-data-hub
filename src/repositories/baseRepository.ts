@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '../../prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 
 // type a = Prisma.TypeMap['model']['Device']['payload'];
@@ -18,7 +18,7 @@ export abstract class BaseRepository<T extends Uncapitalize<Prisma.ModelName>> {
         return this.prismaClient;
     }
 
-    getModelClient() {
+    protected getModelClient() {
         return this.prismaClient[this.modelName];
     }
 }

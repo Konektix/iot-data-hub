@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DeviceBase, UUID } from '../types';
+import { Prisma, PrismaClient } from '../../prisma/client';
+import { DefaultArgs } from '../../prisma/client/runtime/library';
+import { Device, DeviceBase, UUID } from '../types';
 import { BaseRepository } from './baseRepository';
 
 export class HubRepository extends BaseRepository<'hub'> {
@@ -33,6 +33,32 @@ export class HubRepository extends BaseRepository<'hub'> {
 
     async getAll() {
         return this.getModelClient().findMany({
+            include: {
+                devices: true,
+            },
+        });
+    }
+
+    async updateHubDevices(hubId: UUID, devicesToAdd: DeviceBase[], devicesToRemove: Device[]) {
+        return await this.getModelClient().update({
+            where: { id: hubId },
+            data: {
+                devices: {
+                    createMany: {
+                        data: devicesToAdd,
+                    },
+                    updateMany: {
+                        where: {
+                            id: {
+                                in: devicesToRemove.map((device) => device.id),
+                            },
+                        },
+                        data: {
+                            removed: true,
+                        },
+                    },
+                },
+            },
             include: {
                 devices: true,
             },
