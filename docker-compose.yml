@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
     build: .
     ports:
-      - 4000:3000
+      - ${IOT_DATA_HUB_PORT:-4000}:3000
     environment:
       DATABASE_URL: postgresql://admin:root@iot-data-hub-db:5432/iotDataHubDb
     depends_on:
