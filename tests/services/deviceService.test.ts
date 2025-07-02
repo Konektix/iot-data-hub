@@ -29,6 +29,8 @@ describe('DeviceService', () => {
         await prismaClient.$disconnect();
     });
 
+    it('dummy test', () => {});
+
     // describe('creating a device', () => {
     //     it('should create a new device successfully', async () => {
     //         const ieeeAddress = '123';
