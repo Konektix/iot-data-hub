@@ -28,11 +28,8 @@ jobs:
         with:
           node-version: '22.14'
       - run: npm ci
-      - name: Set the value
-        id: step_one
+      - name: Set environment variable
+        run: echo "MY_ENV_VAR=myValue" >> $GITHUB_ENV
+      - name: Use environment variable
         run: |
-          echo "action_state=yellow" >> "$GITHUB_ENV"
-      - name: Use the value
-        id: step_two
-        run: |
-          printf '%s\n' "$action_state" # This will output 'yellow'
+          echo "The value of MY_ENV_VAR is $MY_ENV_VAR"
