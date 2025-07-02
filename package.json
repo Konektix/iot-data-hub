@@ -4,8 +4,6 @@
   "description": "Core service for transit and storage of IoT data",
   "main": "index.js",
   "scripts": {
-    "docker:up": "docker-compose up",
-    "docker:down": "docker-compose down",
     "prisma": "npx prisma migrate deploy",
     "build": "tsc -p tsconfig.build.json",
     "start": "npm run prisma && npm run build && node dist/index.js",

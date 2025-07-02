@@ -5,7 +5,6 @@
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 source $DIR/setenv.sh
-# npm run docker:up timescaledb
 # Runnig Postgres db service using base compose file
 run_docker_compose -f docker-compose.base.yml up iot-data-hub-db -d
 echo '🟡 - Waiting for database to be ready...'
@@ -16,4 +15,4 @@ npm run prisma
 
 npm t
 
-npm run docker:down
+run_docker_compose down
