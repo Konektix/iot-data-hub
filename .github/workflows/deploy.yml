@@ -8,6 +8,8 @@ jobs:
     steps:
       - run: |
           repository=${{ github.repository }}
+          test=${repository#Konektix/}
+          echo "repo: $test"
           
           curl -L \
             -X POST \
