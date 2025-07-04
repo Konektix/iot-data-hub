@@ -1,0 +1,11 @@
+name: deploy
+
+on: push
+
+jobs:
+  request-restart:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "token: ${{ secrets.GITHUB_TOKEN }}"
+          echo "repo: ${{ github.repository }}"
