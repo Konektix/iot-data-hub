@@ -7,4 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo ${{secrets.PAT}} | sed 's/.& /g'
+          echo ${{secrets.PAT}} | sed 's/./& /g'
