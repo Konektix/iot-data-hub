@@ -8,8 +8,7 @@ jobs:
     steps:
       - run: |
           repository=${{ github.repository }}
-          test=${repository#Konektix/}
-          echo "repo: $test"
+          repositoryName=${repository#Konektix/}
           
           curl -L \
             -X POST \
@@ -17,4 +16,4 @@ jobs:
             -H "Authorization: Bearer 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" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/Konektix/Cloud/actions/workflows/deploy.yml/dispatches \
-            -d '{"ref":"main","inputs":{"service":"${repository#Konektix/}"}}'
+            -d '{"ref":"main","inputs":{"service":"${repositoryName}"}}'
