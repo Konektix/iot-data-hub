@@ -1,4 +1,4 @@
-name: build-and-test
+name: build-test-deploy
 
 on: push
 
@@ -34,3 +34,9 @@ jobs:
           echo DATABASE_URL=postgresql://admin:root@localhost:5432/timescaledb >> .env
           cat .env
       - run: npm run test:int
+      
+  deploy:
+    needs: test
+    uses: Konektix/Cloud/.github/workflows/call-deploy.yml@main
+    secrets:
+      PAT: ${{ secrets.PAT }}
