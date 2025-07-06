@@ -6,9 +6,6 @@ jobs:
   request-restart:
     runs-on: ubuntu-latest
     steps:
-      # - run: |
-      #     echo "Repository: ${{ github.repository }}"
-      #     echo ${{ secrets.PAT }} | sed 's/.& /g'
       - run: |
           REPOSITORY=${{github.repository}}
           REPOSITORY_NAME=${REPOSITORY#Konektix/}
