@@ -5,7 +5,7 @@ jobs:
   call-request-restart-cloud:
     uses: Konektix/Cloud/.github/workflows/call-restart-cloud.yml@main
     secrets:
-      PAT: mysupersecret # ${{secrets.PAT}}
+      PAT: ${{secrets.PAT}}
   # request-restart:
   #   runs-on: ubuntu-latest
   #   steps:
