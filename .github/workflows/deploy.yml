@@ -1,9 +1,12 @@
 name: deploy
+
 on: push
 
 jobs:
   call-request-restart-cloud:
     uses: ./.github/workflows/request-restart-cloud.yml
+    secrets:
+      PAT: ${{secrets.PAT}}
   # request-restart:
   #   runs-on: ubuntu-latest
   #   steps:
