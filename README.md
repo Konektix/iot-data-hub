@@ -23,3 +23,10 @@ colima start
 ```
 docker-compose -f docker-compose.yml up
 ```
+
+## Tests
+
+### Run integration tests
+```
+npm run test:int
+```
