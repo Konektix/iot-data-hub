@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { Keycloak } from 'keycloak-connect';
 import { Hub, UUID } from '../types';
 import { HubService } from '../services/hubService';
 import { BaseController } from './baseController';
@@ -12,8 +13,8 @@ export class HubController extends BaseController {
         this.hubService = hubService;
     }
 
-    init(router: Router) {
-        router.get(this.url, this.getHubs);
+    init(router: Router, keycloak: Keycloak) {
+        router.get(this.url, [keycloak.protect()], this.getHubs);
         router.get(this.url + '/:id', this.getHubById);
     }
 

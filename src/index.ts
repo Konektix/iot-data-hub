@@ -3,6 +3,7 @@
 // import bodyParser from 'body-parser';
 // import { DefaultArgs } from '@prisma/client/runtime/library';
 
+import dotenv from 'dotenv';
 import { PrismaClient } from '../prisma/client';
 import { HubRepository } from './repositories/hubRepository';
 import { DeviceRepository } from './repositories/deviceRepository';
@@ -10,6 +11,9 @@ import { HubService } from './services/hubService';
 import { HubController } from './controllers/hubController';
 import { HttpServer } from './httpServer';
 import { MqttClient } from './mqttClient';
+import { Keycloak } from './utils';
+
+dotenv.config();
 
 // export const prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs> = new PrismaClient();
 
@@ -53,18 +57,20 @@ import { MqttClient } from './mqttClient';
 // app.listen(3000);
 
 (async () => {
+    const { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT } = process.env;
     const prismaClient = new PrismaClient();
     await prismaClient.$connect();
     const hubRepository = new HubRepository(prismaClient);
     const deviceRepository = new DeviceRepository(prismaClient);
     const hubService = new HubService(hubRepository, deviceRepository);
     const hubController = new HubController(hubService);
+    const keycloak = new Keycloak(KEYCLOAK_REALM, KEYCLOAK_URL, KEYCLOAK_CLIENT);
 
-    new HttpServer([hubController], async () => {
+    new HttpServer([hubController], keycloak, async () => {
         await prismaClient.$disconnect();
     });
 
-    const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
+    // const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
 
-    new MqttClient(MQTT_BROKER_URL, hubService);
+    // new MqttClient(MQTT_BROKER_URL, hubService);
 })();
