@@ -33,3 +33,14 @@ export interface DeviceMessage {
 }
 
 export type DevicesMessage = DeviceMessage[];
+
+export enum MqttMessageType {
+    Converters = 'converters',
+    Definitions = 'definitions',
+    Devices = 'devices',
+    Extensions = 'extensions',
+    Groups = 'groups',
+    Info = 'info',
+    State = 'state',
+    Logging = 'logging',
+}

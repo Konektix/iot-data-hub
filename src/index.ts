@@ -12,6 +12,7 @@ import { HubController } from './controllers/hubController';
 import { HttpServer } from './httpServer';
 import { MqttClient } from './mqttClient';
 import { Keycloak } from './utils';
+import { HttpClient } from './httpClient';
 
 dotenv.config();
 
@@ -65,12 +66,13 @@ dotenv.config();
     const hubService = new HubService(hubRepository, deviceRepository);
     const hubController = new HubController(hubService);
     const keycloak = new Keycloak(KEYCLOAK_REALM, KEYCLOAK_URL, KEYCLOAK_CLIENT);
+    const httpClient = new HttpClient();
 
     new HttpServer([hubController], keycloak, async () => {
         await prismaClient.$disconnect();
     });
 
-    // const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
+    const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
 
-    // new MqttClient(MQTT_BROKER_URL, hubService);
+    new MqttClient(MQTT_BROKER_URL, hubService, httpClient);
 })();

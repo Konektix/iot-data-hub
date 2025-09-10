@@ -4,8 +4,8 @@ services:
       file: docker-compose.base.yml
       service: iot-data-hub-db
     container_name: iot_data_hub_db_container
-    networks:
-      - common_network
+    # networks:
+    #   - common_network
     volumes:
       - postgres:/var/lib/postgresql/data
 
@@ -20,8 +20,8 @@ services:
       - "5050:80"
     depends_on:
       - iot-data-hub-db
-    networks:
-      - common_network
+    # networks:
+    #   - common_network
     volumes: 
       - pgadmin:/var/lib/pgadmin
 
@@ -29,14 +29,14 @@ services:
     container_name: iot_data_hub_container
     restart: unless-stopped
     build: .
-    ports:
-      - ${IOT_DATA_HUB_PORT:-3000}:3000
+    # ports:
+    #   - ${IOT_DATA_HUB_PORT:-3000}:3000
     environment:
       DATABASE_URL: postgresql://${IOT_DATA_HUB_DB_USER}:${IOT_DATA_HUB_DB_PASSWORD}@iot-data-hub-db:5432/iotDataHubDB
     depends_on:
       - iot-data-hub-db
-    networks:
-      - common_network
+    # networks:
+    #   - common_network
 
 networks:
   common_network:
