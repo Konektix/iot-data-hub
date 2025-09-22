@@ -13,66 +13,33 @@ import { HttpServer } from './httpServer';
 import { MqttClient } from './mqttClient';
 import { Keycloak } from './utils';
 import { HttpClient } from './httpClient';
+import { WebSocketServer } from './webSocketServer';
+import { WebSocketController } from './controllers/webSocketController';
+import { WebSocketService } from './services/webSocketService';
 
 dotenv.config();
 
-// export const prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs> = new PrismaClient();
-
-// prisma
-//     .$connect()
-//     .then(() => {
-//         console.log('Connection has been established successfully.');
-//     })
-//     .catch((err) => {
-//         console.error('Unable to connect to the database:', err);
-//     });
-
-// const app = Express();
-
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
-
-// app.get('/save-log', async (req, res) => {
-//     try {
-//         await prisma.log.create({
-//             data: {
-//                 value: 12,
-//             },
-//         });
-
-//         res.send('Log saved');
-//     } catch (error) {
-//         res.status(500).send(error);
-//     }
-// });
-
-// app.get('/logs', async (req, res) => {
-//     try {
-//         const messages = await prisma.log.findMany();
-//         res.send(messages);
-//     } catch (error) {
-//         res.status(500).send(error);
-//     }
-// });
-
-// app.listen(3000);
-
 (async () => {
-    const { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT } = process.env;
+    const { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT, KEYCLOAK_SECRET } = process.env;
     const prismaClient = new PrismaClient();
     await prismaClient.$connect();
     const hubRepository = new HubRepository(prismaClient);
     const deviceRepository = new DeviceRepository(prismaClient);
     const hubService = new HubService(hubRepository, deviceRepository);
-    const hubController = new HubController(hubService);
-    const keycloak = new Keycloak(KEYCLOAK_REALM, KEYCLOAK_URL, KEYCLOAK_CLIENT);
-    const httpClient = new HttpClient();
+    const keycloak = new Keycloak(KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT, KEYCLOAK_SECRET);
 
-    new HttpServer([hubController], keycloak, async () => {
+    const httpClient = new HttpClient();
+    const hubController = new HubController(keycloak, hubService, httpClient);
+    const webSocketService = new WebSocketService();
+    const webSocketController = new WebSocketController(keycloak, webSocketService);
+
+    const httpServer = new HttpServer([hubController, webSocketController], async () => {
         await prismaClient.$disconnect();
     });
 
+    const webSocketServer = new WebSocketServer(webSocketService, httpServer.server);
+
     const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
 
-    new MqttClient(MQTT_BROKER_URL, hubService, httpClient);
+    // new MqttClient(MQTT_BROKER_URL, hubService, httpClient);
 })();

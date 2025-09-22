@@ -37,9 +37,8 @@ export class MqttClient {
 
             if (messageType === MqttMessageType.Devices) {
                 console.log('Sending the message to the hub manager.');
-                const messageJson = JSON.parse(message.toString()) as DevicesMessage;
-                // await hubService.createOrUpdateHubAndDevicesFromMessage(hubId, messageJson);
                 try {
+                    const messageJson = JSON.parse(message.toString()) as DevicesMessage;
                     await httpClient.updateHubDevicesFromMessage(hubId, messageJson);
                     console.log('Message sent.');
                 } catch (error) {

@@ -1,3 +1,5 @@
+import { WebSocket } from 'ws';
+
 export type UUID = string;
 
 export interface DeviceBase {
@@ -43,4 +45,25 @@ export enum MqttMessageType {
     Info = 'info',
     State = 'state',
     Logging = 'logging',
+}
+
+// Keycloak
+
+export interface ServiceTokenData {
+    access_token: string;
+    expires_in: number;
+    refresh_expires_in: number;
+    token_type: 'Bearer';
+    'not-before-policy': number;
+    scope: string;
+}
+
+// WebSocket
+
+export interface WebSocketConnection {
+    id: UUID;
+    userId: UUID;
+    ipAddress: string | string[];
+    subscriptions: string[];
+    webSocket: WebSocket | null;
 }

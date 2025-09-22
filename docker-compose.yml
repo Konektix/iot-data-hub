@@ -6,6 +6,7 @@ services:
     container_name: iot_data_hub_db_container
     # networks:
     #   - common_network
+    ports: !reset []
     volumes:
       - postgres:/var/lib/postgresql/data
 

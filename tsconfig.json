@@ -3,7 +3,6 @@
   "compilerOptions": {
 	"allowJs": true,
     "outDir": "dist",
-	"resolveJsonModule": true
   },
   "ts-node": { "files": true },
   "include": ["src/**/*.ts", "tests/**/*.ts"],

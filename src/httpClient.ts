@@ -3,25 +3,28 @@ import { DevicesMessage, UUID } from './types';
 export class HttpClient {
     constructor() {}
 
-    updateHubDevicesFromMessage = async (hubId: UUID, devicesMessage: DevicesMessage) => {
+    updateHubDevicesFromMessage = async (hubId: UUID, devicesMessage: DevicesMessage, accessToken?: string) => {
         const url = `http://hub-manager:3000/api/hubs/${hubId}`;
 
-        console.log(url);
-        console.log(devicesMessage);
-        console.log(typeof devicesMessage);
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(devicesMessage),
+            });
 
-        const response = await fetch(url, {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(devicesMessage),
-        });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
 
-        // console.log('Actual request headers:');
-        // console.log(response.);
-
-        return await response.json();
+            await response.json();
+        } catch (error: any) {
+            console.log(error);
+            throw error;
+        }
     };
 }
