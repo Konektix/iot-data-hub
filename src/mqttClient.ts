@@ -1,15 +1,17 @@
 import { connect, MqttClient as Client } from 'mqtt';
-import { WebSocketServer } from 'ws';
 import { DevicesMessage, MqttMessageType } from './types';
 import { HubService } from './services/hubService';
 import { HttpClient } from './httpClient';
+import { WebSocketService } from './services/webSocketService';
 
 export class MqttClient {
     private readonly mqttClient: Client;
+    private readonly webSocketService: WebSocketService;
 
-    constructor(brokerUrl: string, hubService: HubService, httpClient: HttpClient) {
+    constructor(brokerUrl: string, hubService: HubService, httpClient: HttpClient, webSocketService: WebSocketService) {
         //, webSocketServer: WebSocketServer) {
         this.mqttClient = connect(brokerUrl);
+        this.webSocketService = webSocketService;
         // this.mqttClient = connect(brokerUrl, { createWebsocket});
 
         this.mqttClient.on('connect', (packet) => {
@@ -44,6 +46,23 @@ export class MqttClient {
                 } catch (error) {
                     console.log(error);
                 }
+            } else if (messageType === MqttMessageType.State) {
+                const connections = this.webSocketService.getConnectionsWithHubStateSubscription(hubId);
+                this.webSocketService.send(message, connections);
+            } else if (
+                MqttMessageType.Converters === messageType ||
+                MqttMessageType.Definitions === messageType ||
+                MqttMessageType.Extensions === messageType ||
+                MqttMessageType.Groups === messageType ||
+                MqttMessageType.Info === messageType ||
+                MqttMessageType.Logging === messageType
+            ) {
+                console.log(`Received message ${messageType} for hub ${hubId}`);
+            } else if (messageType.startsWith('0x')) {
+                const connections = this.webSocketService.getConnectionsWithMeasurementSubscription(messageType);
+                this.webSocketService.send(message, connections);
+            } else {
+                console.warn(`Unknown message type ${messageType} for hub ${hubId}`);
             }
         });
     }

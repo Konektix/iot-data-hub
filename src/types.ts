@@ -60,10 +60,25 @@ export interface ServiceTokenData {
 
 // WebSocket
 
+export enum SubscriptionName {
+    HubState = 'hub_state',
+    Measurement = 'measurement',
+}
+
+export type Subscription =
+    | {
+          name: SubscriptionName.HubState;
+          hubId: UUID;
+      }
+    | {
+          name: SubscriptionName.Measurement;
+          device: Pick<Device, 'id' | 'ieeeAddress'>;
+      };
+
 export interface WebSocketConnection {
     id: UUID;
     userId: UUID;
     ipAddress: string | string[];
-    subscriptions: string[];
+    subscriptions: Subscription[];
     webSocket: WebSocket | null;
 }

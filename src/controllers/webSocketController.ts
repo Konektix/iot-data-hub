@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { BaseController } from './baseController';
 import { Keycloak } from '../utils';
 import { BadRequestError, InternalServerError, UnauthorizedError } from '../errors';
-import { WebSocketConnection } from '../types';
+import { Subscription, WebSocketConnection } from '../types';
 import { WebSocketService } from '../services/webSocketService';
 import { UUID } from 'crypto';
 
@@ -18,7 +18,7 @@ export class WebSocketController extends BaseController {
     init(router: Router) {
         router.post(this.url, this.authenticate, this.subscribe);
         router.put(this.url + '/:id', this.authenticate, this.updateSubscriptions);
-        router.put(this.url + '/:id', this.authenticate, this.unsubscribe);
+        router.delete(this.url + '/:id', this.authenticate, this.unsubscribe);
     }
 
     private destructReq = <T, U>(req: Request<T, any, U>) => {
@@ -44,7 +44,7 @@ export class WebSocketController extends BaseController {
     };
 
     private subscribe = async (
-        req: Request<unknown, Omit<WebSocketConnection, 'webSocket'>, { subscriptions: string[] }>,
+        req: Request<unknown, Omit<WebSocketConnection, 'webSocket'>, { subscriptions: Subscription[] }>,
         res: Response<Omit<WebSocketConnection, 'webSocket'>>,
         next: NextFunction
     ) => {

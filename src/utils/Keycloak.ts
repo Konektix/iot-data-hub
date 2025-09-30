@@ -2,8 +2,8 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { ServiceTokenData } from '../types';
 
 export class Keycloak {
-    private readonly issuerUrl: string;
-    private readonly realm: string;
+    private readonly internalUrl: string;
+    private readonly externalUrl: string;
     private readonly clientId: string;
     private readonly clientSecret: string;
     private readonly jwks: ReturnType<typeof createRemoteJWKSet>;
@@ -11,17 +11,17 @@ export class Keycloak {
     private serviceTokenExpiry: number = 0;
 
     constructor(url: string, realm: string, clientId: string, clientSecret: string) {
-        this.issuerUrl = `${url}realms/${realm}`;
-        this.realm = realm;
+        this.internalUrl = `http://keycloak:8080/realms/${realm}`;
+        this.externalUrl = `${url}realms/${realm}`;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        const certsUrl = new URL(`http://keycloak:8080/realms/${realm}/protocol/openid-connect/certs`);
+        const certsUrl = new URL(`${this.internalUrl}/protocol/openid-connect/certs`);
         this.jwks = createRemoteJWKSet(certsUrl);
     }
 
     public verifyToken = async (token: string) => {
         const { payload } = await jwtVerify(token, this.jwks, {
-            issuer: [`http://keycloak:8080/realms/${this.realm}`, this.issuerUrl],
+            issuer: [this.internalUrl, this.externalUrl],
             audience: [this.clientId],
         });
 
@@ -29,7 +29,7 @@ export class Keycloak {
     };
 
     private fetchNewServiceToken = async () => {
-        const response = await fetch(`http://keycloak:8080/realms/${this.realm}/protocol/openid-connect/token`, {
+        const response = await fetch(`${this.internalUrl}/protocol/openid-connect/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({

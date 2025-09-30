@@ -1,6 +1,7 @@
 import { BadRequestError, NotFoundError } from '../errors';
-import { UUID, WebSocketConnection } from '../types';
+import { Subscription, SubscriptionName, UUID, WebSocketConnection } from '../types';
 import { randomUUID } from 'crypto';
+import { WebSocket } from 'ws';
 
 export class WebSocketService {
     private readonly connections: WebSocketConnection[] = [];
@@ -43,12 +44,22 @@ export class WebSocketService {
         return { connection, index };
     };
 
-    public createConnection = (userId: UUID, ipAddress: string | string[], subscriptions: string[]) => {
+    public createConnection = (userId: UUID, ipAddress: string | string[], subscriptions: Subscription[]) => {
+        const validSubscriptions = subscriptions.reduce<Subscription[]>((acc, subscription) => {
+            if (subscription.name === SubscriptionName.HubState) {
+                // TODO: Validate if the user is allowed to read this hub
+            } else if (subscription.name === SubscriptionName.Measurement) {
+                // TODO: Validate if the user is allowed to read the device
+            }
+
+            return [...acc, subscription];
+        }, []);
+
         const connection: WebSocketConnection = {
             id: randomUUID(),
             userId,
             ipAddress,
-            subscriptions,
+            subscriptions: validSubscriptions,
             webSocket: null,
         };
 
@@ -57,7 +68,12 @@ export class WebSocketService {
         return connection;
     };
 
-    public updateSubscriptions = (id: UUID, userId: UUID, ipAddress: string | string[], subscriptions: string[]) => {
+    public updateSubscriptions = (
+        id: UUID,
+        userId: UUID,
+        ipAddress: string | string[],
+        subscriptions: Subscription[]
+    ) => {
         const { connection } = this.getConnection(id, userId, ipAddress);
 
         connection.subscriptions = subscriptions;
@@ -78,5 +94,54 @@ export class WebSocketService {
 
     public getConnectionById = (id: UUID) => {
         return this.connections.find((c) => c.id === id);
+    };
+
+    // public getConnectionsWithSubscription = (name: SubscriptionName) => {
+    //     const filteredConnections = this.connections.filter((connection) => {
+    //         connection.subscriptions.some((s) => {
+    //             if (s.name !== subscription.name) {
+    //                 return false;
+    //             }
+
+    //             if (
+    //                 s.name === SubscriptionName.HubState &&
+    //                 subscription.name === SubscriptionName.HubState &&
+    //                 s.hubId === subscription.hubId
+    //             ) {
+    //                 return true;
+    //             }
+
+    // 			if (s.name === SubscriptionName.Measurements && subscription.name === SubscriptionName.Measurements && s.device)
+    //         });
+    //     });
+    // };
+
+    public getConnectionsWithHubStateSubscription = (hubId: UUID) => {
+        return this.connections.filter((connection) => {
+            return connection.subscriptions.some(
+                (subscription) => subscription.name === SubscriptionName.HubState && subscription.hubId === hubId
+            );
+        });
+    };
+
+    public getConnectionsWithMeasurementSubscription = (ieeeAddress: string) => {
+        return this.connections.filter((connection) => {
+            return connection.subscriptions.some(
+                (subscription) =>
+                    subscription.name === SubscriptionName.Measurement &&
+                    subscription.device.ieeeAddress === ieeeAddress
+            );
+        });
+    };
+
+    public send = (data: Parameters<WebSocket['send']>[0], connections: WebSocketConnection[] = this.connections) => {
+        connections.forEach((connection) => {
+            if (connection.webSocket === null) {
+                console.error(`WebSocket connection ${connection.id} is null`);
+                return;
+            }
+
+            connection.webSocket.send(data);
+        });
     };
 }
