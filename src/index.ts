@@ -37,9 +37,7 @@ dotenv.config();
         await prismaClient.$disconnect();
     });
 
-    const webSocketServer = new WebSocketServer(webSocketService, httpServer.server);
+    new WebSocketServer(webSocketService, httpServer.server);
 
-    const MQTT_BROKER_URL = 'mqtt://mqtt-broker:1883'; // 'mqtt://192.168.0.156:1883';
-
-    // new MqttClient(MQTT_BROKER_URL, hubService, httpClient);
+    new MqttClient('mqtt://mqtt-broker:1883', hubService, httpClient, webSocketService);
 })();
